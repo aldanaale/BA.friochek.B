@@ -295,6 +295,10 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSignalR();
 
+// PlatformAdmin bypasses all [Authorize(Roles = "...")] checks globally
+builder.Services.AddSingleton<Microsoft.AspNetCore.Authorization.IAuthorizationHandler,
+    BA.Backend.WebAPI.Authorization.PlatformAdminAuthorizationHandler>();
+
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new[] { "ready" });
 

@@ -24,8 +24,12 @@ public abstract class BaseApiController : ControllerBase
 
     /// <summary>Retorna el TenantId del JWT. Lanza UnauthorizedAccessException si no existe.</summary>
     protected Guid GetTenantId()
-        => CurrentTenant.TenantId
-           ?? throw new UnauthorizedAccessException("Tenant no identificado en el token");
+    {
+        if (CurrentTenant.IsPlatformAdmin)
+            return Guid.Empty;
+        return CurrentTenant.TenantId
+               ?? throw new UnauthorizedAccessException("Tenant no identificado en el token");
+    }
 
     /// <summary>Retorna el UserId del JWT. Lanza UnauthorizedAccessException si no existe.</summary>
     protected Guid GetUserId()

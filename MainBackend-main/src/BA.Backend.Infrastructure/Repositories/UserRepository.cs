@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByIdAsync(Guid id, Guid tenantId, CancellationToken ct)
     {
         return await _context.Users
-            .FirstOrDefaultAsync(u => u.Id == id && u.TenantId == tenantId, ct);
+            .FirstOrDefaultAsync(u => u.Id == id && (tenantId == Guid.Empty || u.TenantId == tenantId), ct);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class UserRepository : IUserRepository
     public async Task<(IEnumerable<User> Items, int TotalCount)> GetPagedAsync(Guid tenantId, int pageNumber, int pageSize, CancellationToken ct)
     {
         var query = _context.Users
-            .Where(u => u.TenantId == tenantId && !u.IsDeleted);
+            .Where(u => (tenantId == Guid.Empty || u.TenantId == tenantId) && !u.IsDeleted);
 
         var totalCount = await query.CountAsync(ct);
         var items = await query

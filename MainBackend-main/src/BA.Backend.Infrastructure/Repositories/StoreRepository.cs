@@ -6,9 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace BA.Backend.Infrastructure.Repositories;
 
-/// <summary>
-/// FIX: reemplazados todos los Console.WriteLine por ILogger estructurado.
-/// </summary>
 public class StoreRepository : IStoreRepository
 {
     private readonly ApplicationDbContext _context;
@@ -32,7 +29,7 @@ public class StoreRepository : IStoreRepository
     {
         _logger.LogDebug("GetByTenantIdAsync tenant {TenantId}", tenantId);
         return await _context.Stores
-            .Where(s => s.TenantId == tenantId)
+            .Where(s => tenantId == Guid.Empty || s.TenantId == tenantId)
             .ToListAsync(ct);
     }
 
