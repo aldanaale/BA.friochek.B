@@ -11,7 +11,7 @@ namespace BA.Backend.WebAPI.Controllers;
 
 [ApiController]
 [Route("transportistas-admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,PlatformAdmin")]
 [Tags("Transporte")]
 public class TransportistasAdminController : ControllerBase
 {

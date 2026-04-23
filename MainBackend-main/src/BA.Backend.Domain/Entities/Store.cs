@@ -18,7 +18,7 @@ public class Store : IBaseEntity, ITenantEntity
 
     public bool IsActive { get; set; } = true;
 
-    // ── IBaseEntity ──────────────────────────────────────────────────────────
+    // IBaseEntity
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -26,7 +26,7 @@ public class Store : IBaseEntity, ITenantEntity
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
-    // ── Navegación ──────────────────────────────────────────────────────────
+    // Navegación
     public Tenant Tenant { get; set; } = null!;
     public ICollection<Cooler> Coolers { get; set; } = new List<Cooler>();
 }

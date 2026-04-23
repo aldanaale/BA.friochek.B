@@ -27,16 +27,8 @@ public class Order : BaseEntity, ITenantEntity
 
     private readonly List<OrderItem> _items = new();
 
-    /// <summary>
-    /// Colección de ítems del pedido. Solo lectura desde fuera del agregado.
-    /// </summary>
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-    // ── Factory ──────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Crea un nuevo pedido. Lanza <see cref="DomainException"/> si los IDs son vacíos.
-    /// </summary>
     public static Order Create(Guid userId, Guid coolerId, string? nfcTagId, Guid tenantId)
     {
         if (userId == Guid.Empty)
@@ -60,11 +52,6 @@ public class Order : BaseEntity, ITenantEntity
         };
     }
 
-    /// <summary>
-    /// Crea una referencia de orden externa sin cooler físico asociado.
-    /// Los pedidos externos se originan en sistemas de pago externos y solo requieren
-    /// un registro local para trazabilidad, por eso CoolerId puede ser vacío.
-    /// </summary>
     public static Order CreateExternalReference(Guid userId, Guid tenantId, string externalOrderId)
     {
         if (userId == Guid.Empty)
@@ -90,11 +77,6 @@ public class Order : BaseEntity, ITenantEntity
         };
     }
 
-    // ── Domain methods ───────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Agrega un ítem al pedido. Solo se puede modificar un pedido en estado "PorPagar".
-    /// </summary>
     public void AddItem(Guid productId, string productName, int quantity, decimal unitPrice)
     {
         if (productId == Guid.Empty)

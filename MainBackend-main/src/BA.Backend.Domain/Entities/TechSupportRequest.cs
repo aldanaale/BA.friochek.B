@@ -27,9 +27,6 @@ public class TechSupportRequest : ITenantEntity
     public Cooler Cooler { get; set; } = null!;
     public NfcTag? NfcTag { get; set; }
 
-    // ── Domain methods ────────────────────────────────────────────────────────
-
-    /// <summary>Cierra el ticket como resuelto, agregando comentarios y foto de evidencia.</summary>
     public void Resolve(string closingComment, string? photoUrl, DateTime resolvedAt)
     {
         Status = "Resuelto";

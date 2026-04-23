@@ -38,7 +38,6 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
 
     public async Task<ForgotPasswordResponseDto> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
-        // ── 1. Determinar el Tenant y Usuario ──────────────────────────────────────────
         var slugToUse = request.TenantSlug;
         Domain.Entities.User? user = null;
         Domain.Entities.Tenant? tenant = null;
@@ -63,12 +62,10 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
             }
         }
 
-        // ── 2. Validaciones de Existencia ──────────────────────────────────────────────
         if (tenant is null || !tenant.IsActive || user is null)
         {
             _logger.LogWarning("ForgotPassword: No se encontró usuario activo {Email} (Empresa: {Slug})", 
                 request.Email, slugToUse ?? "Auto-detect");
-            // Retornamos éxito falso por seguridad para no revelar existencia de emails
             return new ForgotPasswordResponseDto();
         }
 

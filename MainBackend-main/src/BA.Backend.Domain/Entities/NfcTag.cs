@@ -3,11 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BA.Backend.Domain.Entities;
 
-/// <summary>
-/// Tags NFC físicos vinculados a un Cooler.
-/// FIX F7.2: implementa IBaseEntity (soft-delete + auditoría) que antes faltaba.
-/// El Global Query Filter de ApplicationDbContext ahora aplica !IsDeleted a NfcTag.
-/// </summary>
 public class NfcTag : IBaseEntity, ITenantEntity
 {
     [Key]
@@ -27,7 +22,7 @@ public class NfcTag : IBaseEntity, ITenantEntity
 
     public DateTime? EnrolledAt { get; set; }
 
-    // ── IBaseEntity ──────────────────────────────────────────────────────────
+    // IBaseEntity
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -35,6 +30,6 @@ public class NfcTag : IBaseEntity, ITenantEntity
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
-    // ── Navegación ──────────────────────────────────────────────────────────
-    public Cooler? Cooler { get; set; }  // FIX F7.3: nullable porque IsRequired(false) en config
+    // Navegación
+    public Cooler? Cooler { get; set; }
 }

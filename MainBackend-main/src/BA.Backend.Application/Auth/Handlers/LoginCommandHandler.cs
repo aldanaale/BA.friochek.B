@@ -45,7 +45,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
     public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // ── 1. Determinar el Tenant Slug (Opcional) ─────────────────────
         var slugToUse = request.TenantSlug;
 
         if (string.IsNullOrWhiteSpace(slugToUse))
@@ -53,7 +52,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             _logger.LogInformation("Login sin slug: Se buscará la empresa automáticamente por email ({Email})", request.Email);
         }
 
-        // ── 2. CARGA ULTRA-CONSOLIDADA (Single Round-Trip vía AuthRepository) ───────
         var loginData = await _authRepository.GetLoginDataAsync(request.Email, slugToUse, cancellationToken);
 
         var user = loginData.User;
@@ -67,7 +65,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
         var activeSessions = loginData.ActiveSessions;
 
-        // ── 3. Validar Seguridad (Contraseña y Estado) ────────────────────────────
         if (!user.IsActive)
             throw new InvalidCredentialsException("La cuenta no está disponible");
 
@@ -77,7 +74,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             throw new InvalidCredentialsException("Contraseña incorrecta");
         }
 
-        // ── 4. Manejo de sesión única ────────────────────────────────────────
         var existingDevice = activeSessions.FirstOrDefault(s => s.DeviceId == request.DeviceFingerprint);
         bool sessionReplaced = false;
 
@@ -88,7 +84,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             sessionReplaced = true;
         }
 
-        // ── 5. Generar token y Gestionar Sesión (Paralelo) ────────────────────
         var sessionId = Guid.NewGuid().ToString();
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user, tenant.Id, sessionId);
 
@@ -106,12 +101,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             IsActive = true
         };
 
-        // Ejecución en paralelo
         var dbTask = _userSessionRepository.CreateSessionAsync(userSession);
         var serviceTask = _sessionService.RegisterSessionAsync(sessionId, user.Id, expiresAt, cancellationToken);
         await Task.WhenAll(dbTask, serviceTask);
 
-        // ── 6. Carga de datos de Cliente (solo datos básicos, historial se carga en Dashboard) ──────
         ClienteDataDto? clienteData = null;
         if (user.Role == UserRole.Cliente && loginData.Store != null)
         {
@@ -137,7 +130,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             clienteData = new ClienteDataDto { Store = store, Tickets = new() };
         }
 
-        _logger.LogInformation("Login ULTRA-OPTIMIZADO exitoso para {Email}", user.Email);
+        _logger.LogInformation("Login exitoso para {Email}", user.Email);
 
         return new LoginResponseDto
         {
@@ -152,9 +145,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             ClienteData = clienteData
         };
     }
-    // ── Helpers ──────────────────────────────────────────────────────────────
 
-    /// <summary>Frontend route constants for post-login redirection.</summary>
     private static class RedirectRoutes
     {
         public const string Admin            = "/admin/dashboard";

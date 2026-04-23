@@ -38,7 +38,7 @@ public class StoresController(IMediator mediator, ICurrentTenantService currentT
     /// }
     /// </remarks>
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<StoreDto>>), StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<IEnumerable<StoreDto>>>> GetAll(CancellationToken ct)
     {
@@ -51,7 +51,7 @@ public class StoresController(IMediator mediator, ICurrentTenantService currentT
     /// Obtiene el detalle de una tienda por su ID.
     /// </summary>
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<StoreDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<StoreDto>>> GetById(Guid id, CancellationToken ct)
@@ -68,7 +68,7 @@ public class StoresController(IMediator mediator, ICurrentTenantService currentT
     /// </summary>
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<StoreDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<StoreDto>>> Create([FromBody] CreateStoreDto dto, CancellationToken ct)
@@ -95,7 +95,7 @@ public class StoresController(IMediator mediator, ICurrentTenantService currentT
     /// </summary>
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<StoreDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -132,7 +132,7 @@ public class StoresController(IMediator mediator, ICurrentTenantService currentT
     /// </summary>
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Delete(Guid id, CancellationToken ct)

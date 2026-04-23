@@ -13,7 +13,7 @@ namespace BA.Backend.WebAPI.Controllers;
 
 [ApiController]
 [Route("supervisor")]
-[Authorize(Roles = "Supervisor,Admin")]
+[Authorize(Roles = "Supervisor,Admin,PlatformAdmin")]
 [Tags("Supervisor")]
 public class SupervisorController(
     IMediator mediator,

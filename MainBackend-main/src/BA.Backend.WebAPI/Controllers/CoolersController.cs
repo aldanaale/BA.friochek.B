@@ -25,7 +25,7 @@ public class CoolersController(
     /// Este endpoint permite obtener la lista completa de equipos de refrigeración asociados a la cuenta del administrador.
     /// </remarks>
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<CoolerListDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
@@ -40,7 +40,7 @@ public class CoolersController(
     /// <param name="id">Identificador único del cooler (GUID).</param>
     /// <param name="ct">Token de cancelación.</param>
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "Admin,Tecnico")]
+    [Authorize(Roles = "Admin,Tecnico,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<CoolerDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
@@ -56,7 +56,7 @@ public class CoolersController(
     /// </summary>
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpGet("{id:guid}/tags")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<NfcTagDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetTags(Guid id, CancellationToken ct)
@@ -84,7 +84,7 @@ public class CoolersController(
     ///     }
     /// </remarks>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateCoolerDto dto, CancellationToken ct)
@@ -100,7 +100,7 @@ public class CoolersController(
     /// Actualiza la información básica de un cooler existente.
     /// </summary>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCoolerDto dto, CancellationToken ct)
@@ -117,7 +117,7 @@ public class CoolersController(
     /// Actualiza únicamente el estado operativo de un cooler.
     /// </summary>
     [HttpPut("{id:guid}/status")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -142,7 +142,7 @@ public class CoolersController(
     /// Elimina de forma lógica un cooler del sistema.
     /// </summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)

@@ -19,7 +19,7 @@ public class OperationCertificate : IBaseEntity, ITenantEntity
     
     public DateTime AcceptanceTimestamp { get; set; } = DateTime.UtcNow;
 
-    // ── IBaseEntity ──────────────────────────────────────────────────────────
+    // IBaseEntity
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -27,7 +27,7 @@ public class OperationCertificate : IBaseEntity, ITenantEntity
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
-    // ── Navegación ──────────────────────────────────────────────────────────
+    // Navegación
     public Tenant Tenant { get; set; } = null!;
     public RouteStop RouteStop { get; set; } = null!;
     public User User { get; set; } = null!;

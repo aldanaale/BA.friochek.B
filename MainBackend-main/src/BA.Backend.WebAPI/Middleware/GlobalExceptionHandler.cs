@@ -8,12 +8,6 @@ using System.Linq;
 
 namespace BA.Backend.WebAPI.Middleware;
 
-/// <summary>
-/// Middleware global que captura todas las excepciones no manejadas y las convierte
-/// en respuestas HTTP coherentes con el formato ApiResponse&lt;T&gt;.
-/// Mapea: ValidationException → 400, DomainException → 400,
-///        KeyNotFoundException → 404, UnauthorizedAccessException → 401.
-/// </summary>
 public class GlobalExceptionHandler
 {
     private readonly RequestDelegate _next;
@@ -33,7 +27,7 @@ public class GlobalExceptionHandler
         }
         catch (Exception ex)
         {
-            // Logueo estructurado: Serilog capturará automáticamente el contexto del LogContextMiddleware
+            // Log estructurado: Serilog capturará el contexto del LogContextMiddleware
             _logger.LogError(ex, "Excepción no controlada en {Path} [{Method}]. Mensaje: {Message}",
                 context.Request.Path, context.Request.Method, ex.Message);
 
@@ -49,13 +43,11 @@ public class GlobalExceptionHandler
 
         switch (ex)
         {
-            // ── Dominio de negocio ────────────────────────────────────────────────────
             case DomainException domainEx:
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response = ApiResponse<object>.FailureResponse($"[{domainEx.Code}] {domainEx.Message}");
                 break;
 
-            // ── Autenticación ─────────────────────────────────────────────────────────
             case InvalidCredentialsException invalidCreds:
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 response = ApiResponse<object>.FailureResponse(invalidCreds.Message);
@@ -69,7 +61,6 @@ public class GlobalExceptionHandler
                         : unauthorizedEx.Message);
                 break;
 
-            // ── Validación ────────────────────────────────────────────────────────────
             case ValidationException validationEx:
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response = ApiResponse<object>.FailureResponse(validationEx.Message);
@@ -79,7 +70,6 @@ public class GlobalExceptionHandler
                 }
                 break;
 
-            // ── Entidad no encontrada ─────────────────────────────────────────────────
             case UserNotFoundException userNotFound:
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 response = ApiResponse<object>.FailureResponse(userNotFound.Message);
@@ -99,7 +89,6 @@ public class GlobalExceptionHandler
                 response = ApiResponse<object>.FailureResponse($"Error de base de datos: {innerMsg}");
                 break;
 
-            // ── Default ───────────────────────────────────────────────────────────────
             default:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 var debugMsg = $"Error interno: {ex.Message} | Stack: {ex.StackTrace}";

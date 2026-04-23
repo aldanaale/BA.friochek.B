@@ -1,1 +1,0 @@
--- El script de datos de muestra ha sido limpiado según la solicitud.\n-- Se han eliminado los 3 tenants y los 3 usuarios creados previamente.\n

@@ -8,10 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace BA.Backend.Application.Stores.Handlers;
 
-/// <summary>
-/// Handler unificado para el CRUD de Stores.
-/// FIX: reemplazados todos los Console.WriteLine por ILogger estructurado.
-/// </summary>
 public class StoreHandlers :
     IRequestHandler<CreateStoreCommand, StoreDto>,
     IRequestHandler<UpdateStoreCommand, StoreDto>,
@@ -28,7 +24,6 @@ public class StoreHandlers :
         _logger = logger;
     }
 
-    // ── Create ────────────────────────────────────────────────────────────────
     public async Task<StoreDto> Handle(CreateStoreCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Creando tienda '{Name}' para tenant {TenantId}", request.Name, request.TenantId);
@@ -54,7 +49,6 @@ public class StoreHandlers :
         return MapToDto(store);
     }
 
-    // ── Update ────────────────────────────────────────────────────────────────
     public async Task<StoreDto> Handle(UpdateStoreCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Actualizando tienda {StoreId}", request.Id);
@@ -84,7 +78,6 @@ public class StoreHandlers :
         return MapToDto(store);
     }
 
-    // ── Delete ────────────────────────────────────────────────────────────────
     public async Task<bool> Handle(DeleteStoreCommand request, CancellationToken ct)
     {
         _logger.LogInformation("Eliminando tienda {StoreId}", request.Id);
@@ -103,7 +96,6 @@ public class StoreHandlers :
         return true;
     }
 
-    // ── GetAll ────────────────────────────────────────────────────────────────
     public async Task<IEnumerable<StoreDto>> Handle(GetAllStoresQuery request, CancellationToken ct)
     {
         _logger.LogDebug("Listando tiendas para tenant {TenantId}", request.TenantId);
@@ -111,7 +103,6 @@ public class StoreHandlers :
         return stores.Select(MapToDto);
     }
 
-    // ── GetById ───────────────────────────────────────────────────────────────
     public async Task<StoreDto?> Handle(GetStoreByIdQuery request, CancellationToken ct)
     {
         _logger.LogDebug("Buscando tienda {StoreId}", request.Id);
@@ -126,7 +117,6 @@ public class StoreHandlers :
         return MapToDto(store);
     }
 
-    // ── Mapper ────────────────────────────────────────────────────────────────
     private static StoreDto MapToDto(Store store) => new(
         store.Id,
         store.Name,

@@ -99,7 +99,7 @@ public class TecnicoController(
     /// Devuelve las tareas de mantenimiento pendientes o en curso para el técnico autenticado.
     /// </remarks>
     [HttpGet("ordenes")]
-    [Authorize(Roles = "Tecnico,Admin")]
+    [Authorize(Roles = "Tecnico,Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<WorkOrderDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrdenes(CancellationToken ct)
     {
@@ -116,7 +116,7 @@ public class TecnicoController(
     /// <param name="dto">Datos del registro de mantenimiento.</param>
     /// <param name="ct">Token de cancelación.</param>
     [HttpPost("mantenimiento")]
-    [Authorize(Roles = "Tecnico,Admin")]
+    [Authorize(Roles = "Tecnico,Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegistrarMantenimiento([FromBody] RegistrarMantenimientoDto dto, CancellationToken ct)

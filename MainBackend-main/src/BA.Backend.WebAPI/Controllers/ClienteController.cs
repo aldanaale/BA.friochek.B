@@ -144,7 +144,6 @@ public class ClienteController(
         return Ok(ApiResponse<PagedResultDto<TechSupportDto>>.SuccessResponse(result));
     }
 
-    // ── PEDIDOS / ORDERS ─────────────────────────────────────────────────────
 
     /// <summary>
     /// Crea un nuevo pedido vinculado a un cooler via NFC.
@@ -295,8 +294,6 @@ public class ClienteController(
         var command = new LaunchExternalOrderCommand(request.ProductId, GetUserId(), GetTenantId());
         return await Send(command, ct);
     }
-
-    // ── NFC / SOPORTE ────────────────────────────────────────────────────────
 
     /// <summary>
     /// Reporta un tag NFC dañado que no se puede escanear.

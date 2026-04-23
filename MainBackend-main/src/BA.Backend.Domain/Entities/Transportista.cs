@@ -11,10 +11,6 @@ public class Transportista : ITenantEntity
     public bool IsAvailable { get; set; } = true;
     public string? VehiclePlate { get; set; }
 
-    /// <summary>
-    /// Sub-tipo de transporte: ProductCarrier, MachineCarrier, FreightForwarder o LastMile.
-    /// Nullable para compatibilidad con registros anteriores.
-    /// </summary>
     public TransportType? TransportType { get; set; }
 
     public DateTime CreatedAt { get; set; }

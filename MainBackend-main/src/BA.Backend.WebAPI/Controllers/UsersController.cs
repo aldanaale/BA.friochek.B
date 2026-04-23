@@ -45,7 +45,7 @@ public class UsersController(
     /// }
     /// </remarks>
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<PagedResultDto<UserDto>>), StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<PagedResultDto<UserDto>>>> GetAllUsers(
         int pageNumber = 1,
@@ -65,7 +65,7 @@ public class UsersController(
     /// Obtiene un usuario específico por su ID.
     /// </summary>
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<UserDto>>> GetUserById(
@@ -91,7 +91,7 @@ public class UsersController(
     /// }
     /// </remarks>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<ApiResponse<UserDto>>> CreateUser(
@@ -126,7 +126,7 @@ public class UsersController(
     /// Actualiza la información de un usuario existente.
     /// </summary>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -160,7 +160,7 @@ public class UsersController(
     /// Elimina de forma lógica (soft delete) un usuario del sistema.
     /// </summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -189,7 +189,7 @@ public class UsersController(
     /// URL ej: /api/v1/users/a1b2c3d4-0002-0000-0000-000000000000/lock
     /// </remarks>
     [HttpPost("{id:guid}/lock")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> LockUser(
@@ -217,7 +217,7 @@ public class UsersController(
     /// URL ej: /api/v1/users/a1b2c3d4-0002-0000-0000-000000000000/unlock
     /// </remarks>
     [HttpPost("{id:guid}/unlock")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,PlatformAdmin")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> UnlockUser(

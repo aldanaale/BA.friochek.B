@@ -6,19 +6,6 @@ using System.Linq.Expressions;
 
 namespace BA.Backend.Infrastructure.Data;
 
-/// <summary>
-/// DbContext principal de la aplicación.
-///
-/// FIX F7.1: EF Core solo permite UN HasQueryFilter por entidad.
-/// El código original llamaba HasQueryFilter DOS veces (IsDeleted y TenantId),
-/// lo que provocaba que el segundo sobrescribiera al primero.
-/// Resultado: entidades multi-tenant perdían el soft-delete filter.
-///
-/// Solución: un solo filtro combinado por tipo de entidad:
-///   - IBaseEntity + ITenantEntity → !IsDeleted AND TenantId == current
-///   - Solo IBaseEntity            → !IsDeleted
-///   - Solo ITenantEntity          → TenantId == current
-/// </summary>
 public class ApplicationDbContext : DbContext
 {
     private readonly ICurrentTenantService _currentTenantService;
@@ -30,7 +17,6 @@ public class ApplicationDbContext : DbContext
         _currentTenantService = currentTenantService;
     }
 
-    // ── DbSets ───────────────────────────────────────────────────────────────
     public DbSet<Tenant> Tenants { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<UserSession> UserSessions { get; set; } = null!;
@@ -53,7 +39,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<OrderItem> OrderItems { get; set; } = null!;
     public DbSet<OperationCertificate> OperationCertificates { get; set; } = null!;
 
-    // ── Auditoría automática ─────────────────────────────────────────────────
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries<IBaseEntity>())
@@ -71,7 +56,7 @@ public class ApplicationDbContext : DbContext
                     break;
 
                 case EntityState.Deleted:
-                    // Soft-delete: marcar como eliminado en vez de borrar la fila
+                    // Soft-delete: marcar como eliminado
                     entry.Entity.IsDeleted = true;
                     entry.Entity.DeletedAt = DateTime.UtcNow;
                     entry.State = EntityState.Modified;
@@ -90,7 +75,6 @@ public class ApplicationDbContext : DbContext
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    // ── Configuración del modelo ─────────────────────────────────────────────
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

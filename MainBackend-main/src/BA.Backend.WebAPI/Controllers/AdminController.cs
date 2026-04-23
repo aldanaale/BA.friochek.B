@@ -13,7 +13,7 @@ namespace BA.Backend.WebAPI.Controllers;
 
 [ApiController]
 [Route("admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin,PlatformAdmin")]
 [Tags("Admin")]
 public class AdminController(
     IMediator mediator,
