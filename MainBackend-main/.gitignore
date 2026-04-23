@@ -1,0 +1,98 @@
+# ─────────────────────────────────────────────────────────────
+# .gitignore — BA.Backend NFC Platform
+# FIX F8.2: No existía .gitignore → bin/, obj/, .env, etc. eran tracking en git
+# ─────────────────────────────────────────────────────────────
+
+# ── Secretos y variables de entorno ──────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ── Build outputs ─────────────────────────────────────────────
+**/bin/
+**/obj/
+**/out/
+publish/
+
+# ── Archivos de usuario de Visual Studio ─────────────────────
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ── Rider / JetBrains ─────────────────────────────────────────
+.idea/
+*.iml
+
+# ── VS Code ───────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ── NuGet ─────────────────────────────────────────────────────
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Cobertura de tests ────────────────────────────────────────
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+
+# ── SQL Server LocalDB ────────────────────────────────────────
+*.mdf
+*.ldf
+*.ndf
+
+# ── Subidas de archivos locales ───────────────────────────────
+wwwroot/uploads/
+
+# ── Publicación Azure ─────────────────────────────────────────
+*.pubxml
+*.pubxml.user
+
+# ── Docker ────────────────────────────────────────────────────
+.dockerignore
+
+# ── macOS ─────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverrideFiles
+
+# ── Windows ───────────────────────────────────────────────────
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── appsettings de producción (contienen secrets reales) ──────
+appsettings.Production.json
+appsettings.Staging.json
+
+# ─── NUNCA IGNORAR estos archivos de ejemplo ─────────────────
+!.env.example
+!appsettings.json
+!appsettings.Development.json
+
+# ─── Logs temporales de terminal (Antigravity) ────────────────
+*.txt
+*.log
+test_results.csv
+ERROR_REPORT.md
+test_report.md
+CLEANUP_REPORT.md
+scratch/
+!SCHEMA_FIXES.md
+!credenciales_prueba.md
+!DOCUMENTACION_COMPLETA.md

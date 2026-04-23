@@ -1,0 +1,41 @@
+# Reglas del Proyecto BA.FrioCheck para Claude (AI Agent)
+
+## Descripción del Proyecto
+Este es el backend de **BA.FrioCheck**, una aplicación que integra operaciones logísticas, de soporte de activos (Coolers) y de ventas, diseñada con **Clean Architecture** en **.NET**, utilizando **Multi-tenancy** y un enfoque basado en comandos (**CQRS**).
+
+## Estructura de la Solución (Clean Architecture)
+El flujo de dependencias estrictamente fluye hacia adentro (`WebAPI` -> `Application` -> `Domain` <- `Infrastructure`).
+- `BA.Backend.Domain`: Entidades (ricas, con Factory Methods y validación interna), interfaces, excepciones del dominio. **Regla**: No debe depender de ningún otro proyecto. Todo hereda de `BaseEntity` (soft-delete, auditoría) o implementa `ITenantEntity`.
+- `BA.Backend.Application`: Lógica de negocio. Usa **CQRS con MediatR** (Commands para escritura, Queries para lectura). Las validaciones de request se hacen con `FluentValidation`.
+- `BA.Backend.Infrastructure`: Conectividad externa y persistencia base. Mantiene repositorios usando **EF Core** para escrituras complejas / consistencia y **Dapper** para consultas rápidas / Dashboards. Servicios como `JwtTokenService` y `SessionService`.
+- `BA.Backend.WebAPI`: Controladores, Middlewares (manejo global de excepciones, validación de sesiones), inyección de dependencias y configuración.
+
+## Principios Técnicos y Reglas de Codificación
+1. **Multi-tenancy Asegurado**: Todo acceso a datos filtrable debe inyectar el `TenantId` automáticamente. Nunca omitir o manipular manualmente el TenantId salvo en la autenticación. EF Core tiene un *Global Query Filter*.
+2. **Consultas Híbridas (EF Core + Dapper)**:
+   - Usa EF Core para Comandos (Creaciones, Ediciones, Eliminaciones - Soft Deletion en todo) para mantener integridad.
+   - Usa Dapper explícito para Dashboards masivos y validaciones rápidas, apuntando a un performance objetivo de < 300ms.
+3. **Roles y Autenticación**: JWT inyecta los claims de sesión y tenant. 
+4. **Respuesta de API Estandarizada**: Todos los endpoints (salvo excepciones puntuales justificadas) devuelven una estructura modelo en JSON:
+   `{ "success": boolean, "errorCode": string, "message": string, "errors": array/object }`
+5. **No Hardcodear Secretos**: Usa variables de entorno (Environment Variables) siempre.
+
+## Comandos y Operaciones Clave
+- **Restaurar paquetes**: `dotnet restore`
+- **Levantar API Web**: `dotnet run --project src/BA.Backend.WebAPI` (Por defecto en puerto 5003). Localmente usa BD SQL Server `BD_FC`.
+- **Pruebas Completas**: Ejecutar script `./test.ps1` en la raíz. Objetivo base a mantener: Score funcional continuo sin regresiones.
+- **Limpieza de Proyecto**: Ejecutar `./Clean-Project.ps1` cuando sea necesario limpiar caché, binarios y regenerar la solución desde cero.
+- **Credenciales para pruebas de Seed Data**: 
+  Base: `user1_1@savory-chile.cl` (Admin), `user2_2@savory-chile.cl` (Cliente), pw universal: `DevPass123!`
+
+## Flujo Recomendado al Implementar Nuevas Funciones
+1. Modificar el `Domain` si hay nuevas entidades o requerimientos de modelo puro.
+2. Crear o actualizar los Commands/Queries y sus Validadores en `Application`.
+3. Implementar en `Infrastructure` si requiere conexiones Dapper u operaciones transaccionales muy específicas.
+4. Conectar en `WebAPI` publicando un endpoint con el prefijo agrupado (Ej: `/cliente`, `/transportista`, `/admin`). Actualizar seguridad/Claims si amerita.
+
+**Historial a Recordar**:
+- Existen problemas resueltos relativos a Multi-Tenancy y Soft-Deletes. Siempre verificar que una migración tenga un default value de `false` para properties como `IsDeleted`.
+- Se requiere cuidar la nomenclatura. Ejemplo previo: `TransportistId` de persistencia vs `TransportistaId`.
+
+Sigue estas reglas estrictamente antes de proponer código o sugerir modificaciones.

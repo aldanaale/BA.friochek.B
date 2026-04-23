@@ -1,0 +1,8 @@
+namespace BA.Backend.Infrastructure.Settings;
+
+public class DatabaseSettings
+{
+    public string DefaultConnection { get; set; } = null!;
+    public string Provider { get; set; } = "SqlServer";
+    public bool UseRealDatabase { get; set; } = true;
+}
