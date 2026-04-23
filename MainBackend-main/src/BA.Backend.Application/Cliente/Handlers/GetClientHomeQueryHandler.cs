@@ -46,6 +46,16 @@ public class GetClientHomeQueryHandler : IRequestHandler<GetClientHomeQuery, Cli
                 Status = c.Status,
                 LastRevisionAt = c.LastRevisionAt
             }).ToList(),
+            ActiveOrders = stats.ActiveOrders.Select(o => new HomeOrderDto
+            {
+                OrderId = o.OrderId,
+                Status = o.Status,
+                Title = o.Status == "PorPagar" ? "Pedido pendiente de pago" : $"Pedido {o.OrderId.ToString()[..8]}",
+                Description = $"Cooler {o.CoolerId}",
+                CreatedAt = o.CreatedAt,
+                DispatchDate = o.DispatchDate,
+                IsInProgress = o.Status != "Entregado"
+            }).ToList(),
             TechRequests = stats.TechRequests.Select(r => new TechRequestDto
             {
                 RequestId = r.Id,
@@ -55,6 +65,8 @@ public class GetClientHomeQueryHandler : IRequestHandler<GetClientHomeQuery, Cli
             }).ToList()
         };
 
+        response.Orders = response.ActiveOrders;
+        response.CurrentOrdersCount = response.ActiveOrders.Count;
         response.TotalCoolers = response.Coolers.Count;
         response.OperationalCoolers = response.Coolers.Count(c => c.Status == "Activo");
         response.FaultyCoolers = response.Coolers.Count(c => c.Status != "Activo");

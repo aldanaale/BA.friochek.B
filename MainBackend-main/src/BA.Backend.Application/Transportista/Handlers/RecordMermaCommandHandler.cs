@@ -46,7 +46,7 @@ public class MermaCommandHandler : IRequestHandler<MermaCommand, Guid>
         }
 
         // Validación de Geofencing (200m)
-        var cooler = await _coolerRepository.GetByIdAsync(request.CoolerId, ct);
+        var cooler = await _coolerRepository.GetByIdAsync(request.CoolerId, request.TenantId, ct);
         if (cooler == null) throw new DomainException("COOLER_NOT_FOUND", "No se encontró el cooler especificado.");
 
         var store = await _storeRepository.GetByIdAsync(cooler.StoreId, ct);

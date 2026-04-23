@@ -36,7 +36,7 @@ public class ValidateNfcCommandHandler : IRequestHandler<ValidateNfcCommand, Nfc
             throw new InvalidOperationException("NFC_NOT_ACTIVE");
         }
 
-        var cooler = await _coolerRepository.GetByIdAsync(tag.CoolerId, ct);
+        var cooler = await _coolerRepository.GetByIdAsync(tag.CoolerId, request.TenantId, ct);
         if (cooler == null)
         {
             throw new KeyNotFoundException("COOLER_NOT_FOUND");

@@ -12,5 +12,5 @@ public sealed class ValidarNfcCommandHandler : IRequestHandler<ValidarNfcCommand
         => _repository = repository;
 
     public Task<bool> Handle(ValidarNfcCommand request, CancellationToken cancellationToken)
-        => _repository.ValidarNfcAsync(request.TecnicoId, request.NfcCode);
+        => _repository.ValidarNfcAsync(request.TecnicoId, request.NfcCode, cancellationToken);
 }

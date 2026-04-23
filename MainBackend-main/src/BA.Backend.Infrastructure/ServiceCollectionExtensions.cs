@@ -64,6 +64,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEjecutivoComercialRepository, EjecutivoComercialRepository>();
         services.AddScoped<IClientNoteRepository, ClientNoteRepository>();
         services.AddScoped<IOperationCertificateRepository, OperationCertificateRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
 
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();

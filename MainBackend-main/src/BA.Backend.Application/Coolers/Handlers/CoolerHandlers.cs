@@ -103,7 +103,7 @@ public class CoolerHandlers :
         // Actualizar SerialNumber solo si cambia, verificando unicidad para evitar DbUpdateException por IX_Coolers_SerialNumber
         if (request.SerialNumber != null && !request.SerialNumber.Equals(cooler.SerialNumber, StringComparison.OrdinalIgnoreCase))
         {
-            var existing = await _repository.GetBySerialNumberAsync(request.SerialNumber, ct);
+            var existing = await _repository.GetBySerialNumberAsync(request.SerialNumber, request.TenantId, ct);
             if (existing != null && existing.Id != cooler.Id)
                 throw new Exceptions.ValidationException(new Dictionary<string, string[]>
                 {

@@ -47,7 +47,7 @@ public class TransportistaController(
     /// </summary>
     [HttpGet("route")]
     [ProducesResponseType(typeof(ApiResponse<List<TransportistaRouteDto>>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<List<TransportistaRouteDto>>>> GetMyRoute()
+    public async Task<ActionResult<ApiResponse<List<TransportistaRouteDto>>>> GetMyRoute(CancellationToken ct)
     {
         var transportistaId = GetUserId();
         var tenantId = GetTenantId();
@@ -55,7 +55,7 @@ public class TransportistaController(
         logger.LogInformation("Obteniendo hoja de ruta para Transportista {TransportistaId}", transportistaId);
 
         var query = new GetRouteQuery(transportistaId, tenantId);
-        var result = await mediator.Send(query);
+        var result = await mediator.Send(query, ct);
 
         return Ok(ApiResponse<List<TransportistaRouteDto>>.SuccessResponse(result));
     }
@@ -63,7 +63,7 @@ public class TransportistaController(
     [HttpPost("delivery")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<object>>> RecordDelivery([FromBody] RecordDeliveryRequest req)
+    public async Task<ActionResult<ApiResponse<object>>> RecordDelivery([FromBody] RecordDeliveryRequest req, CancellationToken ct)
     {
         logger.LogInformation("Registrando entrega para Parada {RouteStopId}", req.RouteStopId);
  
@@ -74,7 +74,7 @@ public class TransportistaController(
             req.Longitude, 
             req.SignatureBase64);
             
-        await mediator.Send(command);
+        await mediator.Send(command, ct);
 
         return Ok(ApiResponse<object>.SuccessResponse(null, "Entrega registrada exitosamente."));
     }
@@ -85,7 +85,7 @@ public class TransportistaController(
     [HttpPost("merma")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(ApiResponse<Guid>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<Guid>>> RecordMerma([FromForm] RecordMermaRequest req)
+    public async Task<ActionResult<ApiResponse<Guid>>> RecordMerma([FromForm] RecordMermaRequest req, CancellationToken ct)
     {
         var tenantId = GetTenantId();
         var transportistaId = GetUserId();
@@ -107,7 +107,7 @@ public class TransportistaController(
             req.Longitude
         );
 
-        var id = await mediator.Send(command);
+        var id = await mediator.Send(command, ct);
         return Ok(ApiResponse<Guid>.SuccessResponse(id, "Merma reportada con éxito."));
     }
 
@@ -117,7 +117,7 @@ public class TransportistaController(
     [HttpPost("tech-support")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(ApiResponse<Guid>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<Guid>>> CreateTechSupport([FromForm] CreateTechSupportRequest req)
+    public async Task<ActionResult<ApiResponse<Guid>>> CreateTechSupport([FromForm] CreateTechSupportRequest req, CancellationToken ct)
     {
         var tenantId = GetTenantId();
         var transportistaId = GetUserId();
@@ -134,7 +134,7 @@ public class TransportistaController(
             tenantId
         );
 
-        var id = await mediator.Send(command);
+        var id = await mediator.Send(command, ct);
         return Ok(ApiResponse<Guid>.SuccessResponse(id, "Ticket de soporte creado con éxito."));
     }
 

@@ -13,5 +13,5 @@ public sealed class ReportarFallaCommandHandler : IRequestHandler<ReportarFallaC
         => _repository = repository;
 
     public Task<RegistroActividadDto> Handle(ReportarFallaCommand request, CancellationToken cancellationToken)
-        => _repository.RegistrarFallaAsync(request.TecnicoId, request.MaquinaId, request.Descripcion);
+        => _repository.RegistrarFallaAsync(request.TecnicoId, request.MaquinaId, request.Descripcion, cancellationToken);
 }

@@ -3,7 +3,6 @@ using BA.Backend.Application.Tecnico.Commands;
 using BA.Backend.Application.Common.Interfaces;
 using BA.Backend.Domain.Repositories;
 using BA.Backend.Domain.Exceptions;
-using System.Text.Json;
 
 namespace BA.Backend.Application.Tecnico.Handlers;
 
@@ -45,23 +44,19 @@ public sealed class CertificarReparacionCommandHandler : IRequestHandler<Certifi
         if (ticket.CoolerId != nfcValidation.CoolerId)
             throw new DomainException("NFC_MISMATCH", "El tag escaneado no corresponde al cooler del ticket.");
 
-        // 4. Subir Foto de prueba
-        string photoUrl;
-        using (var stream = request.Photo.OpenReadStream())
+        // 4. Subir Foto de prueba (opcional – la foto puede ser nula)
+        string? photoUrl = null;
+        if (request.Photo is not null)
         {
+            using var stream = request.Photo.OpenReadStream();
             photoUrl = await _storage.UploadPhotoAsync(stream, request.Photo.FileName, request.TenantId);
         }
 
-        // 5. Cerrar Ticket
-        ticket.Status = "Resuelto";
-
-        var existingPhotos = string.IsNullOrEmpty(ticket.PhotoUrls)
-            ? new List<string>()
-            : JsonSerializer.Deserialize<List<string>>(ticket.PhotoUrls) ?? new List<string>();
-
-        existingPhotos.Add(photoUrl);
-        ticket.PhotoUrls = JsonSerializer.Serialize(existingPhotos);
-        ticket.Description += $"\n[Cierre por Tecnico - {_dateTime.UtcNow:yyyy-MM-dd}]: {request.Comentarios}";
+        // 5. Cerrar Ticket via método de dominio
+        ticket.Resolve(
+            $"[Cierre por Tecnico - {_dateTime.UtcNow:yyyy-MM-dd}]: {request.Comentarios}",
+            photoUrl,
+            _dateTime.UtcNow);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return true;

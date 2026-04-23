@@ -106,7 +106,7 @@ internal sealed class ValidateNfcTagCommandHandler : IRequestHandler<ValidateNfc
         if (tag == null || !tag.IsEnrolled)
             throw new KeyNotFoundException("NFC_NOT_FOUND");
 
-        var cooler = await _coolerRepository.GetByIdAsync(tag.CoolerId, cancellationToken);
+        var cooler = await _coolerRepository.GetByIdAsync(tag.CoolerId, tag.TenantId, cancellationToken);
         if (cooler == null)
             throw new KeyNotFoundException("COOLER_NOT_FOUND");
 

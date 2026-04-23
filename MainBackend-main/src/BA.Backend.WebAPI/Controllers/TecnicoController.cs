@@ -62,10 +62,10 @@ public class TecnicoController(
     /// </remarks>
     [HttpGet("tickets")]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketAsignadoDto>>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<IEnumerable<TicketAsignadoDto>>>> GetTickets([FromQuery] Guid tecnicoId)
+    public async Task<ActionResult<ApiResponse<IEnumerable<TicketAsignadoDto>>>> GetTickets([FromQuery] Guid tecnicoId, CancellationToken ct)
     {
         logger.LogInformation("Endpoint GetTickets called for technician {TecnicoId}", tecnicoId);
-        var result = await mediator.Send(new GetTicketsAsignadosQuery(tecnicoId));
+        var result = await mediator.Send(new GetTicketsAsignadosQuery(tecnicoId), ct);
         return Ok(ApiResponse<IEnumerable<TicketAsignadoDto>>.SuccessResponse(result));
     }
 
@@ -84,10 +84,10 @@ public class TecnicoController(
     /// </remarks>
     [HttpPost("falla")]
     [ProducesResponseType(typeof(ApiResponse<RegistroActividadDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<RegistroActividadDto>>> ReportarFalla([FromBody] ReportarFallaCommand command)
+    public async Task<ActionResult<ApiResponse<RegistroActividadDto>>> ReportarFalla([FromBody] ReportarFallaCommand command, CancellationToken ct)
     {
         logger.LogInformation("Endpoint ReportarFalla called by technician {TecnicoId}", command.TecnicoId);
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(command, ct);
         return Ok(ApiResponse<RegistroActividadDto>.SuccessResponse(result));
     }
 
@@ -141,7 +141,7 @@ public class TecnicoController(
     [HttpPost("cierre")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<bool>>> CertificarReparacion([FromForm] CertificarReparacionRequest request)
+    public async Task<ActionResult<ApiResponse<bool>>> CertificarReparacion([FromForm] CertificarReparacionRequest request, CancellationToken ct)
     {
         var tenantId = GetTenantId();
         var tecnicoId = GetUserId();
@@ -157,7 +157,7 @@ public class TecnicoController(
             request.NfcAccessToken
         );
 
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(command, ct);
         return Ok(ApiResponse<bool>.SuccessResponse(result, "Reparación certificada con éxito."));
     }
 
@@ -174,7 +174,7 @@ public class TecnicoController(
     /// </remarks>
     [HttpPost("re-enroll")]
     [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<bool>>> ReEnrollNfc([FromBody] ReEnrollNfcRequestDto request)
+    public async Task<ActionResult<ApiResponse<bool>>> ReEnrollNfc([FromBody] ReEnrollNfcRequestDto request, CancellationToken ct)
     {
         var tenantId = GetTenantId();
         var tecnicoId = GetUserId();
@@ -189,7 +189,7 @@ public class TecnicoController(
             request.NewNfcUid
         );
 
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(command, ct);
         return Ok(ApiResponse<bool>.SuccessResponse(result, "NFC Re-enrolado con éxito."));
     }
 }

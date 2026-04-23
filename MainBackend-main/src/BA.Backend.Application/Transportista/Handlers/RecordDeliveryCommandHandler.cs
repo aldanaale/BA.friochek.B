@@ -69,7 +69,7 @@ public class DeliveryCommandHandler : IRequestHandler<DeliveryCommand, bool>
             throw new UnauthorizedAccessException("NFC_TOKEN_INVALID_OR_EXPIRED");
 
         // Validar que el cooler pertenezca a la tienda
-        var cooler = await _coolerRepository.GetByIdAsync(nfcValidation.CoolerId, ct);
+        var cooler = await _coolerRepository.GetByIdAsync(nfcValidation.CoolerId, stop.TenantId, ct);
         if (cooler == null || cooler.StoreId != stop.StoreId)
             throw new DomainException("NFC_MISMATCH", "El tag escaneado no corresponde a un cooler de esta tienda.");
 

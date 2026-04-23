@@ -122,6 +122,12 @@ public class DashboardRepository : IDashboardRepository
             -- Datos del usuario
             SELECT (Name + ' ' + LastName) AS FullName, Email, StoreId FROM dbo.Users WHERE Id=@UserId AND TenantId=@TenantId AND IsDeleted = 0;
 
+            -- Pedidos activos
+            SELECT Id AS OrderId, Status, 0 AS Total, CreatedAt, DispatchDate, CoolerId, NfcTagId
+            FROM dbo.Orders
+            WHERE UserId=@UserId AND TenantId=@TenantId AND Status != 'Entregado' AND IsDeleted=0
+            ORDER BY CreatedAt DESC;
+
             -- Tech requests
             SELECT Id, FaultType, Status, ScheduledDate
             FROM dbo.TechSupportRequests
@@ -132,6 +138,7 @@ public class DashboardRepository : IDashboardRepository
         using var multi = await connection.QueryMultipleAsync(new CommandDefinition(sql, new { UserId = userId, TenantId = tenantId }, cancellationToken: ct));
 
         var user = await multi.ReadFirstOrDefaultAsync<dynamic>();
+        var activeOrders = (await multi.ReadAsync<HomeOrderRecord>()).ToList();
         var techRequests = (await multi.ReadAsync<TechRequestRecord>()).ToList();
 
         string fullName = user?.FullName ?? "";
@@ -163,7 +170,7 @@ public class DashboardRepository : IDashboardRepository
             coolers = (await connection.QueryAsync<CoolerSummaryRecord>(new CommandDefinition(coolersSql, new { TenantId = tenantId }, cancellationToken: ct))).ToList();
         }
 
-        return new ClientDashboardStats(fullName, email, tiendaNombre, tiendaDireccion, coolers, techRequests);
+        return new ClientDashboardStats(fullName, email, tiendaNombre, tiendaDireccion, coolers, activeOrders, techRequests);
     }
 
     public async Task<TechnicianDashboardStats> GetTechnicianDashboardStatsAsync(Guid userId, Guid tenantId, CancellationToken ct = default)

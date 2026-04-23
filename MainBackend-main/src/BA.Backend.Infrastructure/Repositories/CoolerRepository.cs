@@ -22,11 +22,11 @@ public class CoolerRepository : ICoolerRepository
             .ToListAsync(ct);
     }
 
-    public async Task<Cooler?> GetByIdAsync(Guid id, CancellationToken ct)
+    public async Task<Cooler?> GetByIdAsync(Guid id, Guid tenantId, CancellationToken ct)
     {
         return await _context.Coolers
             .Include(c => c.NfcTag)
-            .FirstOrDefaultAsync(c => c.Id == id, ct);
+            .FirstOrDefaultAsync(c => c.Id == id && c.TenantId == tenantId, ct);
     }
 
     public async Task<Cooler?> GetByIdWithTenantAsync(Guid id, Guid tenantId, CancellationToken ct)
@@ -37,16 +37,16 @@ public class CoolerRepository : ICoolerRepository
             .FirstOrDefaultAsync(c => c.Id == id && c.TenantId == tenantId, ct);
     }
 
-    public async Task<Cooler?> GetBySerialNumberAsync(string serialNumber, CancellationToken ct)
+    public async Task<Cooler?> GetBySerialNumberAsync(string serialNumber, Guid tenantId, CancellationToken ct)
     {
         return await _context.Coolers
-            .FirstOrDefaultAsync(c => c.SerialNumber == serialNumber, ct);
+            .FirstOrDefaultAsync(c => c.SerialNumber == serialNumber && c.TenantId == tenantId, ct);
     }
 
-    public async Task<IEnumerable<Cooler>> GetByStoreIdAsync(Guid storeId, CancellationToken ct)
+    public async Task<IEnumerable<Cooler>> GetByStoreIdAsync(Guid storeId, Guid tenantId, CancellationToken ct)
     {
         return await _context.Coolers
-            .Where(c => c.StoreId == storeId)
+            .Where(c => c.StoreId == storeId && c.TenantId == tenantId)
             .ToListAsync(ct);
     }
 

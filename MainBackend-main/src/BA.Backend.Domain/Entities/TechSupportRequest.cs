@@ -26,4 +26,29 @@ public class TechSupportRequest : ITenantEntity
     public User? Technician { get; set; }
     public Cooler Cooler { get; set; } = null!;
     public NfcTag? NfcTag { get; set; }
+
+    // ── Domain methods ────────────────────────────────────────────────────────
+
+    /// <summary>Cierra el ticket como resuelto, agregando comentarios y foto de evidencia.</summary>
+    public void Resolve(string closingComment, string? photoUrl, DateTime resolvedAt)
+    {
+        Status = "Resuelto";
+        Description += $"\n{closingComment}";
+        UpdatedAt = resolvedAt;
+
+        if (photoUrl is not null)
+        {
+            List<string> photos;
+            try
+            {
+                photos = System.Text.Json.JsonSerializer.Deserialize<List<string>>(PhotoUrls) ?? new();
+            }
+            catch
+            {
+                photos = new();
+            }
+            photos.Add(photoUrl);
+            PhotoUrls = System.Text.Json.JsonSerializer.Serialize(photos);
+        }
+    }
 }

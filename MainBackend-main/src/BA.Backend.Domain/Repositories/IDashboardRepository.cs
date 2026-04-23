@@ -69,12 +69,23 @@ public record RetailerTechRecord(
     string Status
 );
 
+public record HomeOrderRecord(
+    Guid OrderId,
+    string Status,
+    decimal Total,
+    DateTime CreatedAt,
+    DateTime? DispatchDate,
+    Guid CoolerId,
+    string? NfcTagId
+);
+
 public record ClientDashboardStats(
     string FullName,
     string Email,
     string TiendaNombre,
     string TiendaDireccion,
     List<CoolerSummaryRecord> Coolers,
+    List<HomeOrderRecord> ActiveOrders,
     List<TechRequestRecord> TechRequests
 );
 

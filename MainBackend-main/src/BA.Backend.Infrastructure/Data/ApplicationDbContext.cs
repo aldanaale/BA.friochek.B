@@ -49,6 +49,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<ClientNote> ClientNotes { get; set; } = null!;
     public DbSet<IntegrationLog> IntegrationLogs { get; set; } = null!;
     public DbSet<Tecnico> Tecnicos { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderItem> OrderItems { get; set; } = null!;
     public DbSet<OperationCertificate> OperationCertificates { get; set; } = null!;
 
     // ── Auditoría automática ─────────────────────────────────────────────────

@@ -154,15 +154,28 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
     }
     // ── Helpers ──────────────────────────────────────────────────────────────
 
+    /// <summary>Frontend route constants for post-login redirection.</summary>
+    private static class RedirectRoutes
+    {
+        public const string Admin            = "/admin/dashboard";
+        public const string PlatformAdmin    = "/admin/dashboard";
+        public const string Cliente          = "/cliente/dashboard";
+        public const string Transportista    = "/transportista/dashboard";
+        public const string Tecnico          = "/tecnico/dashboard";
+        public const string Supervisor       = "/supervisor/dashboard";
+        public const string EjecutivoComercial = "/ejecutivo/dashboard";
+        public const string Default          = "/dashboard";
+    }
+
     private static string GetRedirectUrl(string role) => role switch
     {
-        "Admin" => "/admin/dashboard",
-        "PlatformAdmin" => "/admin/dashboard",
-        "Cliente" => "/cliente/dashboard",
-        "Transportista" => "/transportista/dashboard",
-        "Tecnico" => "/tecnico/dashboard",
-        "Supervisor" => "/supervisor/dashboard",
-        "EjecutivoComercial" => "/ejecutivo/dashboard",
-        _ => "/dashboard"
+        "Admin"               => RedirectRoutes.Admin,
+        "PlatformAdmin"       => RedirectRoutes.PlatformAdmin,
+        "Cliente"             => RedirectRoutes.Cliente,
+        "Transportista"       => RedirectRoutes.Transportista,
+        "Tecnico"             => RedirectRoutes.Tecnico,
+        "Supervisor"          => RedirectRoutes.Supervisor,
+        "EjecutivoComercial"  => RedirectRoutes.EjecutivoComercial,
+        _                     => RedirectRoutes.Default
     };
 }

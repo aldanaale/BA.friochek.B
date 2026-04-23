@@ -16,6 +16,9 @@ public class ClientHomeDto
     public int FaultyCoolers { get; set; }
 
     public List<CoolerDto> Coolers { get; set; } = new();
+    public List<HomeOrderDto> ActiveOrders { get; set; } = new();
+    public List<HomeOrderDto> Orders { get; set; } = new();
+    public int CurrentOrdersCount { get; set; }
     public int OpenAssistanceCount { get; set; }
     public List<TechRequestDto> TechRequests { get; set; } = new();
 
@@ -37,6 +40,17 @@ public class CoolerDto
     public string Model { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public DateTime? LastRevisionAt { get; set; }
+}
+
+public class HomeOrderDto
+{
+    public Guid OrderId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public DateTime? DispatchDate { get; set; }
+    public bool IsInProgress { get; set; }
 }
 
 public class TechRequestDto

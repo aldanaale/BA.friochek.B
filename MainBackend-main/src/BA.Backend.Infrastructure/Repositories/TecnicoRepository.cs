@@ -15,7 +15,7 @@ public class TecnicoRepository : ITecnicoRepository
     public Task<CierreReparacionDto> GetCierreReparacionAsync(Guid tecnicoId, Guid ticketId)
         => Task.FromResult(new CierreReparacionDto(Guid.NewGuid(), "Stub", DateTime.Now));
 
-    public Task<RegistroActividadDto> RegistrarFallaAsync(Guid tecnicoId, Guid maquinaId, string descripcion)
+    public Task<RegistroActividadDto> RegistrarFallaAsync(Guid tecnicoId, Guid maquinaId, string descripcion, CancellationToken ct)
         => Task.FromResult(new RegistroActividadDto(Guid.NewGuid(), "Falla reportada", DateTime.Now));
 
     public Task<RegistroActividadDto> CambiarRepuestoAsync(Guid tecnicoId, Guid maquinaId, Guid repuestoId)
@@ -27,7 +27,7 @@ public class TecnicoRepository : ITecnicoRepository
     public Task<RegistroActividadDto> SubirEvidenciaAsync(Guid tecnicoId, Guid ticketId, IFormFile archivo)
         => Task.FromResult(new RegistroActividadDto(Guid.NewGuid(), "Evidencia subida", DateTime.Now));
 
-    public Task<bool> ValidarNfcAsync(Guid tecnicoId, string nfcCode)
+    public Task<bool> ValidarNfcAsync(Guid tecnicoId, string nfcCode, CancellationToken ct)
         => Task.FromResult(true);
 
     public Task<RegistroActividadDto> CertificarReparacionAsync(Guid tecnicoId, Guid ticketId, string comentarios)
