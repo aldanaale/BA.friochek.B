@@ -1,0 +1,1 @@
+using System; using BCrypt.Net; class Program { static void Main() { var pwds = new[] {"Admin123!","Cliente123!","Trans123!","Tecnico123!"}; foreach (var pw in pwds) Console.WriteLine(pw + " " + BCrypt.Net.BCrypt.HashPassword(pw, 12)); } }
