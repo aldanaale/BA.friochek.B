@@ -212,12 +212,24 @@ builder.Services.AddCors(options =>
     {
         if (allowedOrigins is { Length: > 0 })
         {
-            policy.WithOrigins(allowedOrigins)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-            
-            Log.Information("CORS: FrontendPolicy initialized with {Count} origins: {Origins}", allowedOrigins.Length, string.Join(", ", allowedOrigins));
+            policy.SetIsOriginAllowed(origin =>
+            {
+                var uri = new Uri(origin);
+                var host = uri.Host;
+                // Permitir localhost siempre
+                if (host == "localhost" || host == "127.0.0.1")
+                    return true;
+                // Permitir cualquier IP en la red local 192.168.100.*
+                if (host.StartsWith("192.168.100."))
+                    return true;
+                // Verificar contra la lista configurada en appsettings
+                return allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase);
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+
+            Log.Information("CORS: FrontendPolicy activa — localhost + red 192.168.100.* + {Count} origins fijos", allowedOrigins.Length);
         }
         else if (builder.Environment.IsDevelopment())
         {

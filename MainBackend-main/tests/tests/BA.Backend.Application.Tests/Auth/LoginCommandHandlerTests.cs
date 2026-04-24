@@ -1,14 +1,15 @@
 using BA.Backend.Application.Auth.Commands;
 using BA.Backend.Application.Auth.Handlers;
+using BA.Backend.Application.Auth.DTOs;
 using BA.Backend.Application.Exceptions;
 using BA.Backend.Domain.Entities;
 using BA.Backend.Domain.Enums;
-using BA.Backend.Domain.Models;
 using BA.Backend.Domain.Repositories;
 using BA.Backend.Application.Common.Interfaces;
 using Moq;
 using Xunit;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace BA.Backend.Application.Tests.Auth;
@@ -17,11 +18,11 @@ public class LoginCommandHandlerTests
 {
     private readonly Mock<ITenantRepository>        _mockTenantRepo;
     private readonly Mock<IUserRepository>          _mockUserRepo;
-    private readonly Mock<IAuthRepository>          _mockAuthRepo;
     private readonly Mock<IUserSessionRepository>   _mockSessionRepo;
     private readonly Mock<ISessionService>          _mockSessionService;
     private readonly Mock<IJwtTokenService>         _mockJwtService;
     private readonly Mock<IPasswordHasher>          _mockHasher;
+    private readonly IConfiguration                 _config;
     private readonly Mock<ILogger<LoginCommandHandler>> _mockLogger;
     private readonly LoginCommandHandler            _handler;
 
@@ -29,21 +30,28 @@ public class LoginCommandHandlerTests
     {
         _mockTenantRepo     = new Mock<ITenantRepository>();
         _mockUserRepo       = new Mock<IUserRepository>();
-        _mockAuthRepo       = new Mock<IAuthRepository>();
         _mockSessionRepo    = new Mock<IUserSessionRepository>();
         _mockSessionService = new Mock<ISessionService>();
         _mockJwtService     = new Mock<IJwtTokenService>();
         _mockHasher         = new Mock<IPasswordHasher>();
         _mockLogger         = new Mock<ILogger<LoginCommandHandler>>();
 
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:UseRealDatabase", "false" },
+                { "ConnectionStrings:DefaultConnection", "Server=.;Database=test;Trusted_Connection=True" }
+            })
+            .Build();
+
         _handler = new LoginCommandHandler(
             _mockTenantRepo.Object,
             _mockUserRepo.Object,
-            _mockAuthRepo.Object,
             _mockSessionRepo.Object,
             _mockSessionService.Object,
             _mockJwtService.Object,
             _mockHasher.Object,
+            _config,
             _mockLogger.Object);
     }
 
@@ -84,15 +92,21 @@ public class LoginCommandHandlerTests
         var user      = MakeUser(userId, tenantId);
         var command   = new LoginCommand(Email: "admin@test.com", Password: "Admin123!", TenantSlug: "admin", DeviceFingerprint: "fp-abc-123");
 
-        var loginResult = new LoginResult { User = user, Tenant = tenant, ActiveSessions = new List<UserSession>() };
+        _mockTenantRepo
+            .Setup(x => x.GetBySlugAsync("admin", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tenant);
 
-        _mockAuthRepo
-            .Setup(x => x.GetLoginDataAsync("admin@test.com", "admin", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(loginResult);
+        _mockUserRepo
+            .Setup(x => x.GetByEmailAsync("admin@test.com", tenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
 
         _mockHasher
             .Setup(x => x.Verify("Admin123!", user.PasswordHash))
             .Returns(true);
+
+        _mockSessionRepo
+            .Setup(x => x.GetActiveSessionsByUserAsync(userId))
+            .ReturnsAsync(new List<UserSession>());
 
         _mockJwtService
             .Setup(x => x.GenerateToken(user, tenantId, It.IsAny<string>()))
@@ -113,24 +127,25 @@ public class LoginCommandHandlerTests
         result.UserFullName.Should().Be("Admin User");
         result.ExpiresAt.Should().Be(expiresAt);
 
-        _mockAuthRepo.Verify(x => x.GetLoginDataAsync("admin@test.com", "admin", It.IsAny<CancellationToken>()), Times.Once);
+        _mockTenantRepo.Verify(x => x.GetBySlugAsync("admin", It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepo.Verify(x => x.GetByEmailAsync("admin@test.com", tenantId, It.IsAny<CancellationToken>()), Times.Once);
         _mockHasher.Verify(x => x.Verify("Admin123!", user.PasswordHash), Times.Once);
         _mockJwtService.Verify(x => x.GenerateToken(user, tenantId, It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithInvalidTenantOrUser_ShouldThrowInvalidCredentialsException()
+    public async Task Handle_WithInvalidTenant_ShouldThrowInvalidCredentialsException()
     {
         var command = new LoginCommand(Email: "admin@test.com", Password: "Admin123!", TenantSlug: "invalid-slug", DeviceFingerprint: "fp-abc-123");
 
-        _mockAuthRepo
-            .Setup(x => x.GetLoginDataAsync("admin@test.com", "invalid-slug", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new LoginResult { User = null, Tenant = null });
+        _mockTenantRepo
+            .Setup(x => x.GetBySlugAsync("invalid-slug", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Tenant?)null);
 
         var ex = await Assert.ThrowsAsync<InvalidCredentialsException>(
             () => _handler.Handle(command, CancellationToken.None));
 
-        ex.InnerException!.Message.Should().Contain("inválidas");
+        ex.InnerException!.Message.Should().Contain("válida");
     }
 
     [Fact]
@@ -142,11 +157,13 @@ public class LoginCommandHandlerTests
         var user     = MakeUser(userId, tenantId);
         var command  = new LoginCommand(Email: "admin@test.com", Password: "WrongPassword!", TenantSlug: "admin", DeviceFingerprint: "fp-abc-123");
 
-        var loginResult = new LoginResult { User = user, Tenant = tenant, ActiveSessions = new List<UserSession>() };
+        _mockTenantRepo
+            .Setup(x => x.GetBySlugAsync("admin", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tenant);
 
-        _mockAuthRepo
-            .Setup(x => x.GetLoginDataAsync("admin@test.com", "admin", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(loginResult);
+        _mockUserRepo
+            .Setup(x => x.GetByEmailAsync("admin@test.com", tenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
 
         _mockHasher
             .Setup(x => x.Verify("WrongPassword!", user.PasswordHash))
@@ -167,11 +184,13 @@ public class LoginCommandHandlerTests
         var user     = MakeUser(userId, tenantId, isActive: false);
         var command  = new LoginCommand(Email: "admin@test.com", Password: "Admin123!", TenantSlug: "admin", DeviceFingerprint: "fp-abc-123");
 
-        var loginResult = new LoginResult { User = user, Tenant = tenant, ActiveSessions = new List<UserSession>() };
+        _mockTenantRepo
+            .Setup(x => x.GetBySlugAsync("admin", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tenant);
 
-        _mockAuthRepo
-            .Setup(x => x.GetLoginDataAsync("admin@test.com", "admin", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(loginResult);
+        _mockUserRepo
+            .Setup(x => x.GetByEmailAsync("admin@test.com", tenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
 
         var ex = await Assert.ThrowsAsync<InvalidCredentialsException>(
             () => _handler.Handle(command, CancellationToken.None));

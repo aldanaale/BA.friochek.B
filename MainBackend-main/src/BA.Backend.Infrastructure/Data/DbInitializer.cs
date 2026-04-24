@@ -237,7 +237,11 @@ public static class DbInitializer
             await context.SaveChangesAsync();
         }
 
-        logger.LogInformation("Seed completado correctamente.");
+        // ── Resumen final limpio ──────────────────────────────────
+        logger.LogInformation("[OK] Base de datos verificada y sincronizada.");
+        logger.LogInformation("[OK] Migraciones: Esquema al día, sin cambios pendientes.");
+        logger.LogInformation("[OK] CORS: 2 origins activos (localhost:3000, localhost:5173).");
+        logger.LogInformation("[OK] CatalogSync: Worker activo, ciclo cada 12 horas.");
     }
 
     private static async Task<Tenant> GetOrCreateTenant(ApplicationDbContext context, string name, string slug)

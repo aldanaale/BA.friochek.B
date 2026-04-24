@@ -22,7 +22,7 @@ public class SessionValidationMiddleware
         if (context.User.Identity?.IsAuthenticated == true)
         {
             var sessionId = context.User.FindFirst("session_id")?.Value;
-            _logger.LogDebug("Verificando validez de sesión: {SessionId}", sessionId);
+            _logger.LogInformation("Verificando sesión: {SessionId}", sessionId);
 
             if (!string.IsNullOrEmpty(sessionId))
             {
@@ -38,7 +38,7 @@ public class SessionValidationMiddleware
                 }
                 else
                 {
-                    _logger.LogDebug("Sesión {SessionId} validada correctamente.", sessionId);
+                    _logger.LogInformation("Sesión {SessionId} validada correctamente.", sessionId);
                 }
             }
             else
