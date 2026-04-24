@@ -4,7 +4,7 @@ Plataforma de gestión multi-tenant para activos de refrigeración, logística y
 
 ---
 
-## 📚 Documentación Maestra (Los 4 Pilares)
+## Documentación Maestra (Los 4 Pilares)
 
 He centralizado toda la inteligencia del proyecto en 4 documentos exhaustivos para cubrir todas las necesidades de desarrollo y gestión:
 
@@ -15,7 +15,7 @@ He centralizado toda la inteligencia del proyecto en 4 documentos exhaustivos pa
 
 ---
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 1.  **Instala**: .NET 10 SDK.
 2.  **BD**: Ejecuta scripts en `scripts/database/` (SQL Express).
@@ -24,4 +24,4 @@ He centralizado toda la inteligencia del proyecto en 4 documentos exhaustivos pa
 
 ---
 
-**Estado Actual:** ✅ ESTABILIZACIÓN FASE 4 COMPLETADA | 💯/100 HEALTH | 17 de Abril, 2026.
+**Estado Actual:** ESTABILIZACIÓN FASE 4 COMPLETADA | 100 HEALTH | 17 de Abril, 2026.
