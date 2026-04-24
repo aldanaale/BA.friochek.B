@@ -136,6 +136,7 @@ public class UsersController(
         CancellationToken cancellationToken = default)
     {
         var tenantId = GetTenantId();
+        logger.LogInformation("Actualizando datos del usuario ID: {UserId} en el tenant: {TenantId}", id, tenantId);
 
         try
         {
@@ -148,10 +149,12 @@ public class UsersController(
             );
 
             var result = await mediator.Send(command, cancellationToken);
+            logger.LogInformation("Usuario ID: {UserId} actualizado correctamente", id);
             return Ok(ApiResponse<UserDto>.SuccessResponse(result));
         }
         catch (InvalidOperationException ex)
         {
+            logger.LogWarning(ex, "Error al actualizar usuario ID: {UserId}. Motivo: {Message}", id, ex.Message);
             return BadRequest(ApiResponse<object>.FailureResponse(ex.Message));
         }
     }
@@ -169,15 +172,18 @@ public class UsersController(
         CancellationToken cancellationToken = default)
     {
         var tenantId = GetTenantId();
+        logger.LogInformation("Iniciando eliminación (soft delete) del usuario ID: {UserId} en el tenant: {TenantId}", id, tenantId);
 
         try
         {
             var command = new DeleteUserCommand(id, tenantId);
             await mediator.Send(command, cancellationToken);
+            logger.LogInformation("Usuario ID: {UserId} eliminado correctamente", id);
             return Ok(ApiResponse<object>.SuccessResponse(null, "Usuario eliminado correctamente"));
         }
         catch (InvalidOperationException ex)
         {
+            logger.LogWarning(ex, "Error al eliminar usuario ID: {UserId}. Motivo: {Message}", id, ex.Message);
             return BadRequest(ApiResponse<object>.FailureResponse(ex.Message));
         }
     }
@@ -197,15 +203,18 @@ public class UsersController(
         CancellationToken cancellationToken = default)
     {
         var tenantId = GetTenantId();
+        logger.LogInformation("Bloqueando usuario ID: {UserId} en el tenant: {TenantId}", id, tenantId);
 
         try
         {
             var command = new LockUserCommand(id, tenantId);
             await mediator.Send(command, cancellationToken);
+            logger.LogInformation("Usuario ID: {UserId} bloqueado correctamente", id);
             return Ok(ApiResponse<object>.SuccessResponse(null, "Usuario bloqueado correctamente"));
         }
         catch (InvalidOperationException ex)
         {
+            logger.LogWarning(ex, "Error al bloquear usuario ID: {UserId}. Motivo: {Message}", id, ex.Message);
             return BadRequest(ApiResponse<object>.FailureResponse(ex.Message));
         }
     }
@@ -225,15 +234,18 @@ public class UsersController(
         CancellationToken cancellationToken = default)
     {
         var tenantId = GetTenantId();
+        logger.LogInformation("Desbloqueando usuario ID: {UserId} en el tenant: {TenantId}", id, tenantId);
 
         try
         {
             var command = new UnlockUserCommand(id, tenantId);
             await mediator.Send(command, cancellationToken);
+            logger.LogInformation("Usuario ID: {UserId} desbloqueado correctamente", id);
             return Ok(ApiResponse<object>.SuccessResponse(null, "Usuario desbloqueado correctamente"));
         }
         catch (InvalidOperationException ex)
         {
+            logger.LogWarning(ex, "Error al desbloquear usuario ID: {UserId}. Motivo: {Message}", id, ex.Message);
             return BadRequest(ApiResponse<object>.FailureResponse(ex.Message));
         }
     }
